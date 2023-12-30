@@ -31,13 +31,14 @@ class PredbatDataUpdateCoordinator(DataUpdateCoordinator):
         client: PredbatApiClient,
     ) -> None:
         """Initialize."""
-        self.client = client
-        super().__init__(
-            hass=hass,
-            logger=LOGGER,
-            name=DOMAIN,
-            update_interval=timedelta(minutes=5),
-        )
+        # self.client = client
+        # super().__init__(
+        #     hass=hass,
+        #     logger=LOGGER,
+        #     name=DOMAIN,
+        #     update_interval=timedelta(minutes=5),
+        # )
+        
 
     async def _async_update_data(self):
         """Update data via library."""
