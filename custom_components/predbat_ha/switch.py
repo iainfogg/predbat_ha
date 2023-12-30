@@ -10,7 +10,7 @@ from .entity import PredbatEntity
 ENTITY_DESCRIPTIONS = (
     SwitchEntityDescription(
         key="predbat_ha",
-        name="Integration Switch",
+        name="Predbat Switch",
         icon="mdi:format-quote-close",
     ),
 )

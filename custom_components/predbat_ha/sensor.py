@@ -10,7 +10,7 @@ from .entity import PredbatEntity
 ENTITY_DESCRIPTIONS = (
     SensorEntityDescription(
         key="predbat_ha",
-        name="Integration Sensor",
+        name="Predbat Sensor",
         icon="mdi:format-quote-close",
     ),
 )
