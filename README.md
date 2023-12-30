@@ -4,6 +4,20 @@ The `scripts/develop` script will fail unless you first run `pip install git+htt
 
 See <https://github.com/home-assistant/core/issues/95192> for info.
 
+# TO DO
+
+- Amend binary sensors and switches to work from the controller
+instead of the coordinator
+- Amend sensors to work with multiple devices rather than just
+a single one
+- Create sensors / config for Predbat control
+- Build out config which allows selection of inverter manufacturer
+- Build an options flow with options to suit the manufacturer
+- Allow creation of an inverter object which matches the type of
+inverter selected in the config
+- Add services for sections of the processing
+
+
 # Notice
 
 The component and platforms in this repository are not meant to be used by a
