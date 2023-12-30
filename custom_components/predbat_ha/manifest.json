@@ -1,6 +1,6 @@
 {
   "domain": "predbat_ha",
-  "name": "Integration blueprint",
+  "name": "Predbat HA",
   "codeowners": [
     "@ludeeus"
   ],

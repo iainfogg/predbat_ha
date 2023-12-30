@@ -8,13 +8,13 @@ from homeassistant.components.binary_sensor import (
 )
 
 from .const import DOMAIN
-from .coordinator import BlueprintDataUpdateCoordinator
-from .entity import IntegrationBlueprintEntity
+from .coordinator import PredbatDataUpdateCoordinator
+from .entity import PredbatEntity
 
 ENTITY_DESCRIPTIONS = (
     BinarySensorEntityDescription(
         key="predbat_ha",
-        name="Integration Blueprint Binary Sensor",
+        name="Predbat Binary Sensor",
         device_class=BinarySensorDeviceClass.CONNECTIVITY,
     ),
 )
@@ -24,7 +24,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     """Set up the binary_sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices(
-        IntegrationBlueprintBinarySensor(
+        PredbatBinarySensor(
             coordinator=coordinator,
             entity_description=entity_description,
         )
@@ -32,12 +32,12 @@ async def async_setup_entry(hass, entry, async_add_devices):
     )
 
 
-class IntegrationBlueprintBinarySensor(IntegrationBlueprintEntity, BinarySensorEntity):
+class PredbatBinarySensor(PredbatEntity, BinarySensorEntity):
     """predbat_ha binary_sensor class."""
 
     def __init__(
         self,
-        coordinator: BlueprintDataUpdateCoordinator,
+        coordinator: PredbatDataUpdateCoordinator,
         entity_description: BinarySensorEntityDescription,
     ) -> None:
         """Initialize the binary_sensor class."""

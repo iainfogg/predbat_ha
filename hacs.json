@@ -1,5 +1,5 @@
 {
-    "name": "Integration blueprint",
+    "name": "Predbat HA",
     "filename": "predbat_ha.zip",
     "hide_default_branch": true,
     "homeassistant": "2023.8.0",
