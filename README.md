@@ -1,3 +1,9 @@
+# Important
+
+The `scripts/develop` script will fail unless you first run `pip install git+https://github.com/boto/botocore`
+
+See <https://github.com/home-assistant/core/issues/95192> for info.
+
 # Notice
 
 The component and platforms in this repository are not meant to be used by a
