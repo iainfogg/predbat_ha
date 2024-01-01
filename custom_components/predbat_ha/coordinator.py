@@ -1,7 +1,6 @@
 """DataUpdateCoordinator for predbat_ha."""
 from __future__ import annotations
 
-from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -16,7 +15,6 @@ from .api import (
     PredbatApiClientAuthenticationError,
     PredbatApiClientError,
 )
-from .const import DOMAIN, LOGGER
 
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
@@ -38,7 +36,7 @@ class PredbatDataUpdateCoordinator(DataUpdateCoordinator):
         #     name=DOMAIN,
         #     update_interval=timedelta(minutes=5),
         # )
-        
+
 
     async def _async_update_data(self):
         """Update data via library."""
