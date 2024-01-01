@@ -47,9 +47,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
-    # hass.async_create_task(hass.states.set("predbat_ha.state_thing", "Iain"))
-    # await hass.async_add_executor_job(hass.states.set("predbat_ha.state_thing", "Iain"))
-    # hass.states.set("predbat_ha.state_thing", "Iain")
+    # An example of saving a value in an entity which is not registered
+    # in the Entity Registry.
+    # However, it may still persist in the UI even after being commented out
+    # in code, but disappears on a force reload of the browser - this seems
+    # odd behaviour.
+    # hass.states.async_set("predbat_ha.mystate", "myvalue")
+
+    # An example of removing an entity
+    # hass.states.async_remove("predbat_ha.mystate")
 
     return True
 
