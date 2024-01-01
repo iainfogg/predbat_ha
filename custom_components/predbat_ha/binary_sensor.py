@@ -11,6 +11,7 @@ from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
 from .controller import PredbatController
+
 # from .coordinator import PredbatDataUpdateCoordinator
 from .entity import PredbatEntity
 
