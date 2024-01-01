@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
 # from .coordinator import PredbatDataUpdateCoordinator
@@ -17,7 +18,7 @@ ENTITY_DESCRIPTIONS = (
 )
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(hass: HomeAssistant, entry, async_add_devices):
     """Set up the sensor platform."""
     # coordinator = hass.data[DOMAIN][entry.entry_id]
     controller = hass.data[DOMAIN][entry.entry_id]

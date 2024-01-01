@@ -17,8 +17,8 @@ from .controller import PredbatController
 
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
-    # Platform.BINARY_SENSOR,
-    # Platform.SWITCH,
+    Platform.BINARY_SENSOR,
+    Platform.SWITCH,
 ]
 
 
@@ -45,6 +45,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+
+    # hass.async_create_task(hass.states.set("predbat_ha.state_thing", "Iain"))
+    # await hass.async_add_executor_job(hass.states.set("predbat_ha.state_thing", "Iain"))
+    # hass.states.set("predbat_ha.state_thing", "Iain")
 
     return True
 
