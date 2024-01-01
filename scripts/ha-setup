@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+ln -sf /workspaces/home-assistant-core/predbat_ha/custom_components/predbat_ha /workspaces/home-assistant-core/config/custom_components/
