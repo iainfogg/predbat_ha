@@ -26,6 +26,10 @@ class PredbatFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         user_input: dict | None = None,
     ) -> config_entries.FlowResult:
         """Handle a flow initialized by the user."""
+        # Ensure only a single instance of Predbat is configured
+        if self._async_current_entries():
+            return self.async_abort(reason="single_instance_allowed")
+
         _errors = {}
         if user_input is not None:
             try:
