@@ -51,6 +51,13 @@ class PredbatFlowHandler(ConfigFlow, domain=DOMAIN):
         And other config can be modified later.
         """
 
+        # TODO: Copy structure from met config flow for building
+        # data structure that can be used both within config and
+        # option flows.
+        # TODO: Then consider how to adapt so we do the simple
+        # config details first, but allow a more complex flow
+        # later in the options flow
+
         # Ensure only a single instance of Predbat is configured
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
@@ -85,11 +92,21 @@ class PredbatOptionsFlowHandler(OptionsFlow):
         """First step in the options flow."""
         errors: Dict[str, str] = {}
         if user_input is not None:
-            new_config_data = self.config_entry.data | user_input
+            # My original attempt (which works):
+            # new_config_data = self.config_entry.data | user_input
+            # return self.async_create_entry(
+            #     title="Predbat config data",
+            #     data=new_config_data,
+            # )
 
+            # This code copied from met component
+
+            # Update config entry with data from user input
+            self.hass.config_entries.async_update_entry(
+                self._config_entry, data=user_input
+            )
             return self.async_create_entry(
-                title="Predbat config data",
-                data=new_config_data,
+                title=self._config_entry.title, data=user_input
             )
 
         option_schema = vol.Schema(
