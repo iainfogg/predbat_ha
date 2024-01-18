@@ -5,6 +5,7 @@ from homeassistant.components.sensor import SensorEntity, SensorEntityDescriptio
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
+
 # from .coordinator import PredbatDataUpdateCoordinator
 from .controller import PredbatController
 from .entity import PredbatEntity
