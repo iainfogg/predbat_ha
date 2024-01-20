@@ -13,11 +13,60 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import selector
 import homeassistant.helpers.config_validation as cv
 
-from .const import DOMAIN, LOGGER
+from .const import CONFIG_INITIAL_MODE, DOMAIN, LOGGER
+
+
+class PredbatConfigSchemaManager:
+    """Supports the config and options flows by building schemas."""
+
+    @staticmethod
+    def buildSchema(
+        hass: HomeAssistant, config_entry: ConfigEntry | None = None
+    ) -> vol.Schema:
+        """Build config schema to be used in config and options flows."""
+        schema = vol.Schema(
+            {
+                vol.Required(
+                    "something",
+                    default=None
+                    if config_entry is None
+                    else config_entry.data.get("something"),
+                ): str,
+                vol.Required(
+                    CONFIG_INITIAL_MODE,
+                    default="Read-only"
+                    if config_entry is None
+                    else config_entry.data.get(CONFIG_INITIAL_MODE),
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=[
+                            selector.SelectOptionDict(
+                                value="Read-only", label="Read-only"
+                            ),
+                            selector.SelectOptionDict(
+                                value="Charge-discharge", label="Charge-discharge"
+                            ),
+                        ],
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                    )
+                ),
+            }
+        )
+
+        return schema
+
+
+class PredbatConfigInputValidator:
+    """Supports config and options flows by validating user input."""
+
+    @staticmethod
+    def validateInput(user_input: Dict[str, Any]):
+        """Validate user input."""
+        return True
 
 
 class PredbatFlowHandler(ConfigFlow, domain=DOMAIN):
@@ -58,17 +107,27 @@ class PredbatFlowHandler(ConfigFlow, domain=DOMAIN):
         # config details first, but allow a more complex flow
         # later in the options flow
 
+        errors = {}
+
         # Ensure only a single instance of Predbat is configured
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
 
-        # As we have no config to capture (as everything is in
-        # the options flow), just create the config entry now.
-        return self.async_create_entry(
-            # title=user_input[CONF_USERNAME],
-            title="Predbat",
-            # data=user_input,
-            data={},
+        if user_input is not None:
+            # Do any validation in addition to what's done by
+            # the schema itself
+            if True:
+                return self.async_create_entry(
+                    # title=user_input[CONF_USERNAME],
+                    title="Predbat",
+                    data=user_input,
+                )
+            errors["somefield"] = "some_error_message"
+
+        return self.async_show_form(
+            step_id="user",
+            data_schema=PredbatConfigSchemaManager.buildSchema(self.hass),
+            errors=errors,
         )
 
     @staticmethod
@@ -91,6 +150,7 @@ class PredbatOptionsFlowHandler(OptionsFlow):
     ) -> Dict[str, Any]:
         """First step in the options flow."""
         errors: Dict[str, str] = {}
+
         if user_input is not None:
             # My original attempt (which works):
             # new_config_data = self.config_entry.data | user_input
@@ -103,25 +163,16 @@ class PredbatOptionsFlowHandler(OptionsFlow):
 
             # Update config entry with data from user input
             self.hass.config_entries.async_update_entry(
-                self._config_entry, data=user_input
+                self.config_entry, data=user_input
             )
             return self.async_create_entry(
-                title=self._config_entry.title, data=user_input
+                title=self.config_entry.title, data=user_input
             )
 
-        option_schema = vol.Schema(
-            {
-                vol.Required(
-                    "inverter_ip_address",
-                    default=self.config_entry.options.get("inverter_ip_address"),
-                ): cv.string,
-                vol.Optional(
-                    "inverter_port",
-                    default=self.config_entry.options.get("inverter_port"),
-                ): cv.string,
-            }
-        )
-
         return self.async_show_form(
-            step_id="init", data_schema=option_schema, errors=errors
+            step_id="init",
+            data_schema=PredbatConfigSchemaManager.buildSchema(
+                self.hass, self.config_entry
+            ),
+            errors=errors,
         )
