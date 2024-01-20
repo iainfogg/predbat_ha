@@ -23,6 +23,9 @@ from .const import CONFIG_INITIAL_MODE, DOMAIN, LOGGER
 class PredbatConfigSchemaManager:
     """Supports the config and options flows by building schemas."""
 
+    # TODO: COnsider using self.add_suggested_values_to_schema
+    # to do the merging of existing values, as per
+    # https://developers.home-assistant.io/docs/data_entry_flow_index/#defaults--suggestions
     @staticmethod
     def buildSchema(
         hass: HomeAssistant, config_entry: ConfigEntry | None = None
@@ -168,6 +171,16 @@ class PredbatOptionsFlowHandler(OptionsFlow):
             return self.async_create_entry(
                 title=self.config_entry.title, data=user_input
             )
+
+        # Consider using a menu like this to let the user
+        # select the various parts of the system to configure
+        # return self.async_show_menu(
+        #     step_id="init",
+        #     menu_options={
+        #         "option_1": "Option 1",
+        #         "option_2": "Option 2",
+        #     },
+        # )
 
         return self.async_show_form(
             step_id="init",
