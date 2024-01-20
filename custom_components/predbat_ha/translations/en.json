@@ -2,11 +2,13 @@
   "config": {
     "step": {
       "user": {
-        "description": "Inverter type",
-        "title": "Step 1 title",
+        "title": "Predbat configuration",
+        "description": "Initial Predbat configuration is done here, but it can be customised later",
         "data": {
           "inverter_type": "Inverter type",
-          "inverter_name": "Nice name for your inverter"
+          "inverter_name": "Nice name for your inverter",
+          "something": "Some thing",
+          "mode": "Predbat mode"
         }
       },
       "inverter_details": {
@@ -25,11 +27,13 @@
   "options": {
     "step": {
       "init": {
-        "title": "Options title",
-        "description": "Options description",
+        "title": "Amend Predbat options",
+        "description": "Re-configure Predbat here",
         "data": {
           "inverter_ip_address": "Inverter IP address",
-          "inverter_port": "Inverter port"
+          "inverter_port": "Inverter port",
+          "something": "Some thing",
+          "mode": "Predbat mode"
         }
       }
     }
