@@ -9,6 +9,10 @@
           "inverter_name": "Nice name for your inverter",
           "something": "Some thing",
           "mode": "Predbat mode"
+        },
+        "data_description": {
+          "something": "explain this field",
+          "mode": "Explain the mode field"
         }
       },
       "inverter_details": {
@@ -34,6 +38,10 @@
           "inverter_port": "Inverter port",
           "something": "Some thing",
           "mode": "Predbat mode"
+        },
+        "data_description": {
+          "something": "explain this field",
+          "mode": "Explain the mode field"
         }
       }
     }
