@@ -4,6 +4,7 @@ For more details about this integration, please refer to
 https://github.com/ludeeus/predbat_ha
 """
 from __future__ import annotations
+import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
@@ -22,16 +23,23 @@ PLATFORMS: list[Platform] = [
     Platform.SWITCH,
 ]
 
+_LOGGER = logging.getLogger(__name__)
 
 # https://developers.home-assistant.io/docs/config_entries_index/#setting-up-an-entry
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
     hass.data.setdefault(DOMAIN, {})
 
-    hass.data[DOMAIN][entry.entry_id] = PredbatController(
+    predbatController = PredbatController(
         hass=hass,
         config_entry=entry,
     )
+
+    hass.data[DOMAIN][entry.entry_id] = predbatController
+
+    predbatController.load_old_predbat()
+
+
 
     # hass.data[DOMAIN][entry.entry_id] = coordinator = PredbatDataUpdateCoordinator(
     #     hass=hass,

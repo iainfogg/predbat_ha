@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 from homeassistant.helpers.entity import DeviceInfo
-# from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+# from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, NAME, VERSION
+
 # from .coordinator import PredbatDataUpdateCoordinator
 from .controller import PredbatController
 
