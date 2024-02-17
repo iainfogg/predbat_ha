@@ -14334,8 +14334,9 @@ class PredBat(ADHass):
             if ha_value is None:
                 history = self.get_history(entity_id=entity)
                 if history:
-                    history = history[0]
-                    ha_value = history[-1]["state"]
+                    # history = history[0]
+                    # ha_value = history[-1]["state"]
+                    ha_value = history[-1].state
 
             # Default?
             if ha_value is None:
@@ -14363,6 +14364,10 @@ class PredBat(ADHass):
 
         # Register HA services
         if register:
+            # Return early, as don't yet understand how these fit with working in a
+            # native integration, they are very AppDaemon focused
+            return
+
             self.fire_event(
                 "service_registered", domain="input_number", service="set_value"
             )

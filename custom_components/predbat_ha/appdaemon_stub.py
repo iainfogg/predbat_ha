@@ -1,8 +1,12 @@
 from functools import wraps
+from datetime import datetime, timedelta, timezone
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Callable
+from time import sleep
 
 from homeassistant.core import HomeAssistant
+from homeassistant.components.recorder import history
+from homeassistant.helpers import entity_registry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,6 +30,10 @@ class AppDaemonHassStub:
     def set_state(self, entity_id: str, **kwargs: Optional[Any]):
         # Rename state key to suit HA set state method
         kwargs['new_state'] = kwargs.pop('state')
+
+        # TODO: Look into creating the device if it doesn't exist,
+        # so that it can be created and attached to the Predbat device,
+        # rather than just being a helper entity floating around by itself
         self.hass.states.async_set(entity_id = entity_id, **kwargs)
 
     def get_state(
@@ -46,6 +54,70 @@ class AppDaemonHassStub:
 
         return self.hass.states.get(entity_id)
 
+    def get_history(self, **kwargs):
+        entity_id = kwargs.get('entity_id', None)
+        entity_ids = [entity_id] if entity_id is not None else None
+        start_time = (datetime.now(timezone.utc) - timedelta(days=10))
+
+        recorder_instance = self.hass.components.recorder.get_instance(self.hass)
+
+        future = recorder_instance.async_add_executor_job(
+            history.get_significant_states, self.hass, start_time, None, entity_ids
+        )
+
+        historyValues = self.__wait_for_future(future)
+
+        return historyValues.get(entity_id, None)
+
+    def __wait_for_future(self, future):
+        while not future.done():
+            sleep(0.01)  # Optionally, yield control to the event loop
+
+        return future.result()
+
+    async def async_get_history(self, **kwargs):
+        entity_id = kwargs.get('entity_id', None)
+        entity_ids = [entity_id] if entity_id is not None else None
+        start_time = (datetime.now(timezone.utc) - timedelta(days=10))
+
+        # historyValues = await self.hass.async_add_executor_job(history.get_significant_states(
+        #     self.hass,
+        #     start_time,
+        #     datetime.datetime.now(),
+        #     entity_ids
+        # ))
+
+        historyValues = self.hass.components.recorder.get_instance(self.hass).async_add_executor_job(
+            history.get_significant_states, self.hass, start_time, None, entity_ids
+        )
+
+        # coro = history.get_significant_states(
+        #     self.hass,
+        #     start_time,
+        #     datetime.datetime.now(),
+        #     entity_ids
+        # )
+
+        # historyValues = asyncio.run_coroutine_threadsafe(
+        #     coro,
+        #     self.hass.loop
+        # ).result()
+
+        # historyValues = self.hass.async_add_executor_job(
+        #     history.get_significant_states, self.hass, start_time, None, entity_ids
+        # )
+
+        # historyValues = history.get_significant_states(
+        #     self.hass,
+        #     start_time,
+        #     datetime.datetime.now(),
+        #     entity_ids
+        # )
+
+        return historyValues
+
+    def run_every(self, callback: Callable, start: datetime, interval: int, **kwargs):
+        pass
 
 class AppDaemonAdStub:
     def __init__(self) -> None:

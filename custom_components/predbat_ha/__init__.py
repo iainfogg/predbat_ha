@@ -37,7 +37,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data[DOMAIN][entry.entry_id] = predbatController
 
-    predbatController.load_old_predbat()
+    await predbatController.load_old_predbat()
 
 
 
