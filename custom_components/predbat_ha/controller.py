@@ -5,6 +5,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .predbat import PredBat as OldPredbat
+from .predbat import ENVIRONMENT, ENVIRONMENT_HA_INTEGRATION
 from .appdaemon_stub import AppDaemonHassStub
 
 import yaml
@@ -40,7 +41,7 @@ class PredbatController:
         config_from_file = await self.hass.async_add_executor_job(self.config_loader, file_and_folder)
 
         old_predbat.args = config_from_file["pred_bat"]
-        old_predbat.args["mode"] = "ha_integration"
+        old_predbat.args[ENVIRONMENT] = ENVIRONMENT_HA_INTEGRATION
 
         # adstub = AppDaemonHassStub(self.hass)
 
