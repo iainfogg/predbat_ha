@@ -7,6 +7,9 @@ from homeassistant.core import HomeAssistant
 from .predbat import PredBat as OldPredbat
 from .appdaemon_stub import AppDaemonHassStub
 
+import yaml
+from os import path
+
 _LOGGER = logging.getLogger(__name__)
 
 class PredbatController:
@@ -31,6 +34,14 @@ class PredbatController:
     async def load_old_predbat(self):
         old_predbat = OldPredbat(self.hass)
 
+        current_folder = path.dirname(__file__)
+
+        file_and_folder = current_folder + '/config/apps.yaml'
+        config_from_file = await self.hass.async_add_executor_job(self.config_loader, file_and_folder)
+
+        old_predbat.args = config_from_file["pred_bat"]
+        old_predbat.args["mode"] = "ha_integration"
+
         # adstub = AppDaemonHassStub(self.hass)
 
         # result = await adstub.get_history(entity_id = 'predbat.status')
@@ -43,3 +54,9 @@ class PredbatController:
         # TODO: Prob need to either make initialize async, or make it sync
         # and call it as a task (or whatever the proper method is)
         await self.hass.async_add_executor_job(old_predbat.initialize)
+
+    def config_loader(self, filename):
+        with open(filename, 'r') as file:
+            config = yaml.safe_load(file)
+
+        return config
