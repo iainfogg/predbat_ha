@@ -7,7 +7,6 @@ see Readme for information
 # pylint: disable=line-too-long
 # pylint: disable=attribute-defined-outside-init
 from datetime import datetime, timedelta
-import math
 import re
 import time
 import pytz
