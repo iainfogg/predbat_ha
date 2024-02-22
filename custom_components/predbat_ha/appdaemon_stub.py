@@ -10,7 +10,8 @@ from homeassistant.helpers import entity_registry
 
 _LOGGER = logging.getLogger(__name__)
 
-class AppDaemonHassStub:
+
+class AppDaemonHassApiStub:
     def __init__(self, hass: HomeAssistant) -> None:
         self.args = {
             "prefix": "predbat",
@@ -57,6 +58,8 @@ class AppDaemonHassStub:
     def get_history(self, **kwargs):
         entity_id = kwargs.get('entity_id', None)
         entity_ids = [entity_id] if entity_id is not None else None
+        # TODO: Actually read the days passed in, if they exist
+        # (and figure out what to do if they're not passed in)
         start_time = (datetime.now(timezone.utc) - timedelta(days=10))
 
         recorder_instance = self.hass.components.recorder.get_instance(self.hass)
