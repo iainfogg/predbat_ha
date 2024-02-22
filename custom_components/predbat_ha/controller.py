@@ -6,7 +6,6 @@ from homeassistant.core import HomeAssistant
 
 from .predbat import PredBat as OldPredbat
 from .predbat import ENVIRONMENT, ENVIRONMENT_HA_INTEGRATION
-from .appdaemon_stub import AppDaemonHassStub
 
 import yaml
 from os import path
