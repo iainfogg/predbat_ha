@@ -4,7 +4,7 @@ import logging
 from typing import Any, Optional, Callable
 from time import sleep
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 from homeassistant.components.recorder import history
 from homeassistant.helpers import entity_registry
 
@@ -32,6 +32,16 @@ class AppDaemonHassApiStub:
         # Rename state key to suit HA set state method
         kwargs['new_state'] = kwargs.pop('state')
 
+
+        # Trim state to 255 chars, errors if longer than that
+        # TODO: Figure out which entity this is for
+        if isinstance(kwargs['new_state'], State):
+            kwargs['new_state'] = kwargs['new_state'].state
+
+        # self.log(f"State is {kwargs['new_state']}")
+        # self.log(f"Entity is {entity_id}")
+        # self.log(f"Entity type is {type(kwargs['new_state'])}")
+
         # TODO: Look into creating the device if it doesn't exist,
         # so that it can be created and attached to the Predbat device,
         # rather than just being a helper entity floating around by itself
@@ -46,13 +56,16 @@ class AppDaemonHassApiStub:
         **kwargs: Optional[Any],
     ) -> Any:
         """Get state of all or single entity/entities"""
+
         if entity_id is None:
             states = {}
             for entity in self.hass.states.async_all():
                 states[entity.entity_id] = entity
 
+            # TODO: Should this return a state object, or the state from the object?
             return states
 
+        # TODO: Should this return a state object, or the state from the object?
         return self.hass.states.get(entity_id)
 
     def get_history(self, **kwargs):
