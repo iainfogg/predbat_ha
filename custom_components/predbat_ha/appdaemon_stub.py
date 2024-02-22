@@ -60,13 +60,19 @@ class AppDaemonHassApiStub:
         if entity_id is None:
             states = {}
             for entity in self.hass.states.async_all():
-                states[entity.entity_id] = entity
+                states[entity.entity_id] = self.__get_state_if_state_object(entity)
 
             # TODO: Should this return a state object, or the state from the object?
             return states
 
         # TODO: Should this return a state object, or the state from the object?
-        return self.hass.states.get(entity_id)
+        return self.__get_state_if_state_object(self.hass.states.get(entity_id))
+
+    def __get_state_if_state_object(self, stateObject, defaultReturn=None):
+        if isinstance(stateObject, State):
+            return stateObject.state
+
+        return defaultReturn
 
     def get_history(self, **kwargs):
         entity_id = kwargs.get('entity_id', None)
