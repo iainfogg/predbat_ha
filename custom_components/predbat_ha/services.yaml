@@ -1,0 +1,3 @@
+run_predbat_time_loop:
+  name: Run N minutes loop
+  description: Do the main calculations in Predbat
