@@ -22,6 +22,7 @@ inverter selected in the config
 as state without going in the entity registry)
 - Work out approach to get original Predbat code working within this context
 - Get pyyaml installed automatically
+- Make entities added automatically ties to Predbat device (maybe via set_state)
 
 ## Changes to make to old Predbat to make it work in HA package
 
