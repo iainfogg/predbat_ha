@@ -39,12 +39,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     await predbatController.load_old_predbat()
 
-    def run_predbat_time_loop(service_call):
-        predbatController.predbat.log('Service called')
+    def predbat_update_time_loop(service_call):
+        predbatController.predbat.log('predbat_update_time_loop service called')
+        hass.async_add_executor_job(predbatController.predbat.update_time_loop, {})
+
+    hass.services.async_register(DOMAIN, 'predbat_update_time_loop', predbat_update_time_loop)
+
+    def predbat_run_time_loop(service_call):
+        predbatController.predbat.log('predbat_run_time_loop service called')
         hass.async_add_executor_job(predbatController.predbat.run_time_loop, {})
 
-    hass.services.async_register(DOMAIN, 'run_predbat_time_loop', run_predbat_time_loop)
-
+    hass.services.async_register(DOMAIN, 'predbat_run_time_loop', predbat_run_time_loop)
 
 
     # hass.data[DOMAIN][entry.entry_id] = coordinator = PredbatDataUpdateCoordinator(
