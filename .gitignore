@@ -15,3 +15,7 @@ coverage.xml
 # Home Assistant configuration
 config/*
 !config/configuration.yaml
+
+# Ignore predbat.py, symlinked from real repo into this folder for now
+# (currently on the real repo in the integration_prep branch)
+custom_components/predbat_ha/predbat.py
