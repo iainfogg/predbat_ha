@@ -22,3 +22,6 @@ custom_components/predbat_ha/predbat.py
 
 # Ignore the Predbat config file (for now)
 custom_components/predbat_ha/config/apps.yaml
+
+# Ignore the generated entities dashboard JSON
+custom_components/predbat_ha/config/predbat_dashboard.yaml
