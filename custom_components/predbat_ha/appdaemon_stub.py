@@ -59,7 +59,8 @@ class AppDaemonHassApiStub:
 
         if entity_id is None:
             states = {}
-            for entity in self.hass.states.async_all():
+            # for entity in self.hass.states.async_all():
+            for entity in self.hass.states.all():
                 states[entity.entity_id] = self.__get_state_if_state_object(entity)
 
             # TODO: Should this return a state object, or the state from the object?
@@ -89,7 +90,11 @@ class AppDaemonHassApiStub:
 
         historyValues = self.__wait_for_future(future)
 
-        return historyValues.get(entity_id, None)
+        entityHistoryValues = historyValues.get(entity_id, None)
+
+        # self.log("warn: entity_ids: {} - item type {} entityHistoryValues: {}".format(entity_ids, type(entityHistoryValues[0]), entityHistoryValues if entity_id != 'update.predbat_version' else 'redacted due to length'))
+
+        return entityHistoryValues
 
     def __wait_for_future(self, future):
         while not future.done():
