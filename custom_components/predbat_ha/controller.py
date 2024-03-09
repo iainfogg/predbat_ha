@@ -2,6 +2,7 @@
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.core import HomeAssistant, callback
 
 from .predbat import PredBat as OldPredbat
@@ -55,7 +56,16 @@ class PredbatController:
 
         # TODO: Prob need to either make initialize async, or make it sync
         # and call it as a task (or whatever the proper method is)
-        await self.hass.async_add_executor_job(self.predbat.initialize)
+        async def async_run_predbat_initialize(event):
+            await self.hass.async_add_executor_job(self.predbat.initialize)
+
+        # Run the initialize once HA has started up
+        # (otherwise the HA entities aren't returned, so Predbat can't find the
+        # various sensors that it needs)
+        self.hass.bus.async_listen_once(
+            EVENT_HOMEASSISTANT_STARTED, async_run_predbat_initialize
+        )
+        
 
     def config_loader(self, filename):
         with open(filename, 'r') as file:
