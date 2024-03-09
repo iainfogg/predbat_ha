@@ -19,3 +19,6 @@ config/*
 # Ignore predbat.py, symlinked from real repo into this folder for now
 # (currently on the real repo in the integration_prep branch)
 custom_components/predbat_ha/predbat.py
+
+# Ignore the Predbat config file (for now)
+custom_components/predbat_ha/config/apps.yaml
