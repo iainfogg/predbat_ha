@@ -25,3 +25,6 @@ custom_components/predbat_ha/config/apps.yaml
 
 # Ignore the generated entities dashboard JSON
 custom_components/predbat_ha/config/predbat_dashboard.yaml
+
+# Ignore the debug output
+custom_components/predbat_ha/config/predbat_debug.yaml
