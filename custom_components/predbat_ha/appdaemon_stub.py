@@ -6,7 +6,7 @@ from time import sleep
 
 from homeassistant.core import HomeAssistant, State
 from homeassistant.components.recorder import history
-from homeassistant.helpers import entity_registry
+from homeassistant.helpers import entity_registry, event
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,11 +41,17 @@ class AppDaemonHassApiStub:
         # self.log(f"State is {kwargs['new_state']}")
         # self.log(f"Entity is {entity_id}")
         # self.log(f"Entity type is {type(kwargs['new_state'])}")
+        
+        # self.log("State value being set; entity {} state value {}".format(entity_id, kwargs['new_state']))
+        # if isinstance(kwargs['new_state'], str) and len(kwargs['new_state']) > 255:
+        #     self.log("WARN: State value longer than allowed 255; entity {} state value {}".format(entity_id, kwargs['new_state']))
 
         # TODO: Look into creating the device if it doesn't exist,
         # so that it can be created and attached to the Predbat device,
         # rather than just being a helper entity floating around by itself
-        self.hass.states.async_set(entity_id = entity_id, **kwargs)
+        # self.hass.states.async_set(entity_id = entity_id, **kwargs)
+        kwargs['entity_id'] = entity_id
+        self.hass.states.async_set(**kwargs)
 
     def get_state(
         self,
@@ -61,19 +67,39 @@ class AppDaemonHassApiStub:
             states = {}
             # for entity in self.hass.states.async_all():
             for entity in self.hass.states.all():
-                states[entity.entity_id] = self.__get_state_if_state_object(entity)
+                states[entity.entity_id] = self._get_state_as_dict(entity)
 
             # TODO: Should this return a state object, or the state from the object?
             return states
 
         # TODO: Should this return a state object, or the state from the object?
-        return self.__get_state_if_state_object(self.hass.states.get(entity_id))
+        # TODO: Add support for attributes and default
+        return self._get_state_as_dict(self.hass.states.get(entity_id = entity_id, **kwargs), attribute = attribute, default = default)
 
-    def __get_state_if_state_object(self, stateObject, defaultReturn=None):
+    def _get_state_as_dict(self, stateObject,         
+            entity_id: str = None,
+            attribute: str = None,
+            default: Any = None,
+            copy: bool = True,
+            **kwargs: Optional[Any],
+    ):
+        # self.log("Trace: _get_state_as_dict - attribute {} default {} state object {}".format(attribute, default, stateObject))
         if isinstance(stateObject, State):
-            return stateObject.state
+            stateObjectAsDict = stateObject.as_dict()
+            stateValue = default
 
-        return defaultReturn
+            if attribute:
+                if "attributes" in stateObjectAsDict and attribute in stateObjectAsDict["attributes"]:
+                    stateValue = stateObjectAsDict["attributes"][attribute]
+                else:
+                    stateValue = None
+            else:
+                stateValue = stateObjectAsDict["state"]
+            # stateValue = stateObject.as_dict()["state"]
+            # self.log("Trace: _get_state_as_dict - State object found, will return {}".format(stateValue))
+            return stateValue
+
+        return default
 
     def get_history(self, **kwargs):
         entity_id = kwargs.get('entity_id', None)
@@ -90,11 +116,23 @@ class AppDaemonHassApiStub:
 
         historyValues = self.__wait_for_future(future)
 
+        # Convert state objects to dictionary objects, so that the 
+        # legacy Predbat can run without modification
         entityHistoryValues = historyValues.get(entity_id, None)
+        convertedEntityHistoryValues = []
+        if entityHistoryValues is None:
+            return None
+        
+        for stateObject in entityHistoryValues:
+            convertedEntityHistoryValues.append(stateObject.as_dict())
+        
 
-        # self.log("warn: entity_ids: {} - item type {} entityHistoryValues: {}".format(entity_ids, type(entityHistoryValues[0]), entityHistoryValues if entity_id != 'update.predbat_version' else 'redacted due to length'))
+        # Return within a list, to reflect the values the legacy Predbat code
+        # expected to get from AppDaemon
+        convertedEntityHistoryValues = [convertedEntityHistoryValues]
 
-        return entityHistoryValues
+        # self.log("warn: getting history - entity_ids: {} - convertedEntityHistoryValues: {}".format(entity_ids, convertedEntityHistoryValues[0] if entity_id != 'update.predbat_version' else 'redacted due to length'))
+        return convertedEntityHistoryValues
 
     def __wait_for_future(self, future):
         while not future.done():
@@ -142,6 +180,19 @@ class AppDaemonHassApiStub:
         # )
 
         return historyValues
+    
+    def listen_state(self, callback: Callable, entity_id: str):
+        # self.hass.states.hel
+        listener = event.track_state_change(self.hass, entity_id, callback)
+        listener()
+
+    def call_service(self, serviceId: str, **kwargs):
+        # TODO test handling missing services e.g. if device to notify doesn't exist
+        namespace, service = serviceId.split("/")
+        self.log("Trace: Service call to namespace {} service {} (serviceId {})".format(namespace, service, serviceId))
+        if not namespace or not service:
+            self.log("Warn: serviceId {} does not contain a namespace and service".format(serviceId))
+        self.hass.services.call(namespace, service, dict(kwargs))
 
     def run_every(self, callback: Callable, start: datetime, interval: int, **kwargs):
         pass
