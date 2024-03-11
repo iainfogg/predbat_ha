@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-ln -sf /homeassistant/predbat_ha/custom_components/predbat_ha /config/custom_components/
-ln -sf /homeassistant/batpred/apps/predbat/predbat.py /config/custom_components/predbat_ha/predbat.py
+ln -sf /config/predbat_ha/custom_components/predbat_ha /config/custom_components/
+ln -sf /config/batpred/apps/predbat/predbat.py /config/custom_components/predbat_ha/predbat.py
