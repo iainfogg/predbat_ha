@@ -10,6 +10,8 @@ from .const import DOMAIN, NAME, VERSION
 # from .coordinator import PredbatDataUpdateCoordinator
 from .controller import PredbatController
 
+from .predbat import THIS_VERSION as PREDBAT_VERSION
+
 
 # class PredbatEntity(CoordinatorEntity):
 class PredbatEntity(RestoreEntity):
@@ -26,10 +28,11 @@ class PredbatEntity(RestoreEntity):
         # self._attr_unique_id = controller.config_entry.entry_id
         self._attr_unique_id = entity_description.key
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, self.unique_id)},
+            identifiers={(DOMAIN, controller.config_entry.entry_id)},
             name=NAME,
-            model=VERSION,
+            model=PREDBAT_VERSION,
             manufacturer=NAME,
+            sw_version=PREDBAT_VERSION
         )
 
     @property
