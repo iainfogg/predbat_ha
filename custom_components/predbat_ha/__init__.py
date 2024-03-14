@@ -35,7 +35,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         config_entry=entry,
     )
 
+    # TODO: Work out which one of these can do the job
     hass.data[DOMAIN][entry.entry_id] = predbatController
+    hass.data[DOMAIN]['controller'] = predbatController
 
     await predbatController.load_old_predbat()
 
@@ -83,6 +85,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
     if unloaded := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         hass.data[DOMAIN].pop(entry.entry_id)
+        # TODO: One of these pops needs removing (to match where they are added in async_setup_entry)
+        hass.data[DOMAIN].pop('controller')
     return unloaded
 
 

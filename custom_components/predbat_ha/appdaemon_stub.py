@@ -1,4 +1,4 @@
-from functools import wraps
+from functools import wraps, partial
 from datetime import datetime, timedelta, timezone
 import logging
 from typing import Any, Optional, Callable
@@ -6,7 +6,9 @@ from time import sleep
 
 from homeassistant.core import HomeAssistant, State
 from homeassistant.components.recorder import history
-from homeassistant.helpers import entity_registry, event
+from homeassistant.helpers import entity_registry, event, entity
+
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +43,7 @@ class AppDaemonHassApiStub:
         # self.log(f"State is {kwargs['new_state']}")
         # self.log(f"Entity is {entity_id}")
         # self.log(f"Entity type is {type(kwargs['new_state'])}")
-        
+
         # self.log("State value being set; entity {} state value {}".format(entity_id, kwargs['new_state']))
         # if isinstance(kwargs['new_state'], str) and len(kwargs['new_state']) > 255:
         #     self.log("WARN: State value longer than allowed 255; entity {} state value {}".format(entity_id, kwargs['new_state']))
@@ -50,8 +52,61 @@ class AppDaemonHassApiStub:
         # so that it can be created and attached to the Predbat device,
         # rather than just being a helper entity floating around by itself
         # self.hass.states.async_set(entity_id = entity_id, **kwargs)
+        # entity_registry.async_resolve_entity_id(entity_id)
+
+        # resolve_kwargs = {}
+        # resolve_kwargs['registry'] = entity_registry.async_get(self.hass)
+        # resolve_kwargs['entity_id_or_uuid'] = entity_id
+        
+        entity_registry_instance = self._call_async_method(
+            entity_registry.async_get, self.hass
+        )
+        entity_is_registered = self._call_async_method(
+            entity_registry_instance.async_is_registered, entity_id
+        )
+        if not entity_is_registered:
+            self.log("Trace: entity {} is not in the entity registry and should be added".format(entity_id))
+        else:
+            self.log("Trace: entity {} is in the entity registry".format(entity_id))
+
         kwargs['entity_id'] = entity_id
+
         self.hass.states.async_set(**kwargs)
+
+    def create_and_set_state(self, entity_id: str, **kwargs: Optional[Any]):
+        entity_registry_instance: entity_registry.EntityRegistry = self._call_async_method(
+            entity_registry.async_get, self.hass
+        )
+        entity_is_registered = self._call_async_method(
+            entity_registry_instance.async_is_registered, entity_id
+        )
+        if not entity_is_registered:
+            self.log("Trace: entity {} is not in the entity registry and should be added".format(entity_id))
+            # TODO Actually get it from the registry instead of hard-coding it!
+            device_id = '96ff19b4e856c2c7be97b128364a2f94'
+            type, split_entity = entity_id.split('.')
+
+            func_partial = partial(
+                entity_registry_instance.async_get_or_create,
+                type,
+                DOMAIN,
+                split_entity,
+                config_entry = self.hass.data[DOMAIN]['controller'].config_entry,
+                device_id = device_id,
+                suggested_object_id = split_entity,
+            )
+            self._call_async_method(
+                func_partial
+            )
+        else:
+            self.log("Trace: entity {} is in the entity registry".format(entity_id))
+
+        # modified_args = kwargs
+        # modified_args.pop('type')
+
+        # modified_args['entity_id'] = entity_id
+
+        self.set_state(entity_id, **kwargs)
 
     def get_state(
         self,
@@ -76,7 +131,7 @@ class AppDaemonHassApiStub:
         # TODO: Add support for attributes and default
         return self._get_state_as_dict(self.hass.states.get(entity_id = entity_id, **kwargs), attribute = attribute, default = default)
 
-    def _get_state_as_dict(self, stateObject,         
+    def _get_state_as_dict(self, stateObject,
             entity_id: str = None,
             attribute: str = None,
             default: Any = None,
@@ -116,16 +171,16 @@ class AppDaemonHassApiStub:
 
         historyValues = self.__wait_for_future(future)
 
-        # Convert state objects to dictionary objects, so that the 
+        # Convert state objects to dictionary objects, so that the
         # legacy Predbat can run without modification
         entityHistoryValues = historyValues.get(entity_id, None)
         convertedEntityHistoryValues = []
         if entityHistoryValues is None:
             return None
-        
+
         for stateObject in entityHistoryValues:
             convertedEntityHistoryValues.append(stateObject.as_dict())
-        
+
 
         # Return within a list, to reflect the values the legacy Predbat code
         # expected to get from AppDaemon
@@ -134,6 +189,12 @@ class AppDaemonHassApiStub:
         # self.log("warn: getting history - entity_ids: {} - convertedEntityHistoryValues: {}".format(entity_ids, convertedEntityHistoryValues[0] if entity_id != 'update.predbat_version' else 'redacted due to length'))
         return convertedEntityHistoryValues
 
+    def _call_async_method(self, method: Callable, *args):
+        future = self.hass.async_add_executor_job(
+            method, *args
+        )
+        return self.__wait_for_future(future)
+        
     def __wait_for_future(self, future):
         while not future.done():
             sleep(0.01)  # Optionally, yield control to the event loop
@@ -180,7 +241,7 @@ class AppDaemonHassApiStub:
         # )
 
         return historyValues
-    
+
     def listen_state(self, callback: Callable, entity_id: str):
         # self.hass.states.hel
         listener = event.track_state_change(self.hass, entity_id, callback)

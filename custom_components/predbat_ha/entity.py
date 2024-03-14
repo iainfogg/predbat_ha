@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.restore_state import RestoreEntity
 
 # from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, NAME, VERSION
@@ -11,7 +12,7 @@ from .controller import PredbatController
 
 
 # class PredbatEntity(CoordinatorEntity):
-class PredbatEntity:
+class PredbatEntity(RestoreEntity):
     """Predbat class."""
 
     # _attr_attribution = ATTRIBUTION
@@ -29,3 +30,7 @@ class PredbatEntity:
             model=VERSION,
             manufacturer=NAME,
         )
+
+    @property
+    def should_poll(self):
+        return False
