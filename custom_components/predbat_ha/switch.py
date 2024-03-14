@@ -19,7 +19,7 @@ ENTITY_DESCRIPTIONS = (
     ),
     SwitchEntityDescription(
         key="switch.predbat_switch_no_2",
-        name="pb_sw_1",
+        name="pb_sw_2",
         icon="mdi:format-quote-close",
     ),
     # SwitchEntityDescription(
