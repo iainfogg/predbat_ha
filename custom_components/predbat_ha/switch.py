@@ -68,7 +68,6 @@ class PredbatSwitch(PredbatEntity, SwitchEntity):
 
     async def async_added_to_hass(self):
         last_state = await self.async_get_last_state()
-        self.controller.predbat.log(f"Trace: last_state {last_state.state}")
         if last_state:
             # Restore previous state
             self._attr_is_on = True if last_state.state == "on" else False
