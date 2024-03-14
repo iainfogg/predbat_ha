@@ -31,8 +31,6 @@ class PredbatEntity(RestoreEntity):
             identifiers={(DOMAIN, controller.config_entry.entry_id)},
             name=NAME,
             model=PREDBAT_VERSION,
-            manufacturer=NAME,
-            sw_version=PREDBAT_VERSION
         )
 
     @property
