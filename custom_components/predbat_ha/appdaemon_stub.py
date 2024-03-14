@@ -1,3 +1,12 @@
+"""appdaemon_stub module.
+
+The appdaemon_stub module is designed to provide the same API to Predbat
+as AppDaemon offered, and to return the same values.
+
+The motivation has been to allow, as far as possible, the existing Predbat
+code to run with either AppDaemon or as part of a HA integration.
+"""
+
 from functools import wraps, partial
 from datetime import datetime, timedelta, timezone
 import logging
@@ -15,13 +24,18 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class AppDaemonHassApiStub:
+    """This provides the AppDaemonHassApi methods that Predbat relies on."""
+
     def __init__(self, hass: HomeAssistant) -> None:
+        """Initialise the class, setting properties that AppDaemon would have offered that Predbat relies on."""
+
         self.args = {
             "prefix": "predbat",
         }
         self.hass = hass
 
     def log(self, msg: str, *args, **kwargs):
+        """Provide logging"""
         # Figure out logging level from string content
         level = logging.INFO
         if (msg.lower().find('warn:') != -1):
@@ -32,6 +46,7 @@ class AppDaemonHassApiStub:
         _LOGGER.log(level, msg, *args, **kwargs)
 
     def set_state(self, entity_id: str, **kwargs: Any | None):
+        """Set the state of an entity"""
         # Rename state key to suit HA set state method
         kwargs['new_state'] = kwargs.pop('state')
 
@@ -75,6 +90,17 @@ class AppDaemonHassApiStub:
         self.hass.states.async_set(**kwargs)
 
     def create_and_set_state(self, entity_id: str, **kwargs: Any | None):
+        """
+        This method's use is debatable, but for now it's aiming to allow
+        Predbat to create entities and save their initial state.
+
+        However, I suspect that entity creation will have to be restricted to the
+        various platforms on boot-up, rather than being done dynamically.
+
+        That's because entities created in the way they're done in this method
+        are created in the entity registry, but can't handle having their state
+        modified - they're orphaned from any entity code needed to handle the state.
+        """
         entity_registry_instance: entity_registry.EntityRegistry = self._call_async_method(
             entity_registry.async_get, self.hass
         )
@@ -268,7 +294,7 @@ class AppDaemonAdStub:
 
         @wraps(f)
         def f_app_lock(*args, **kw):
-            self = args[0]
+            # self = args[0]
 
             # self.lock.acquire()
             # try:
