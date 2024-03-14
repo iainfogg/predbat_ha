@@ -4,7 +4,6 @@ from __future__ import annotations
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.restore_state import RestoreEntity
 from .const import DOMAIN
 
 # from .coordinator import PredbatDataUpdateCoordinator
@@ -65,15 +64,15 @@ class PredbatSwitch(PredbatEntity, SwitchEntity):
         self.entity_description = entity_description
         # TODO this is no good here without getting the value from somewhere
         self._attr_is_on = False
-        self.controller.predbat.log("Trace: __init__ state {}".format(self.state))
+        self.controller.predbat.log(f"Trace: __init__ state {self.state}")
 
     async def async_added_to_hass(self):
         last_state = await self.async_get_last_state()
-        self.controller.predbat.log("Trace: last_state {}".format(last_state.state))
+        self.controller.predbat.log(f"Trace: last_state {last_state.state}")
         if last_state:
             # Restore previous state
             self._attr_is_on = True if last_state.state == "on" else False
-    
+
     @property
     def is_on(self) -> bool:
         """Return true if the switch is on."""

@@ -1,12 +1,13 @@
 from functools import wraps, partial
 from datetime import datetime, timedelta, timezone
 import logging
-from typing import Any, Optional, Callable
+from typing import Any
+from collections.abc import Callable
 from time import sleep
 
 from homeassistant.core import HomeAssistant, State
 from homeassistant.components.recorder import history
-from homeassistant.helpers import entity_registry, event, entity
+from homeassistant.helpers import entity_registry, event
 
 from .const import DOMAIN
 
@@ -30,7 +31,7 @@ class AppDaemonHassApiStub:
 
         _LOGGER.log(level, msg, *args, **kwargs)
 
-    def set_state(self, entity_id: str, **kwargs: Optional[Any]):
+    def set_state(self, entity_id: str, **kwargs: Any | None):
         # Rename state key to suit HA set state method
         kwargs['new_state'] = kwargs.pop('state')
 
@@ -57,7 +58,7 @@ class AppDaemonHassApiStub:
         # resolve_kwargs = {}
         # resolve_kwargs['registry'] = entity_registry.async_get(self.hass)
         # resolve_kwargs['entity_id_or_uuid'] = entity_id
-        
+
         entity_registry_instance = self._call_async_method(
             entity_registry.async_get, self.hass
         )
@@ -65,15 +66,15 @@ class AppDaemonHassApiStub:
             entity_registry_instance.async_is_registered, entity_id
         )
         if not entity_is_registered:
-            self.log("Trace: entity {} is not in the entity registry and should be added".format(entity_id))
+            self.log(f"Trace: entity {entity_id} is not in the entity registry and should be added")
         else:
-            self.log("Trace: entity {} is in the entity registry".format(entity_id))
+            self.log(f"Trace: entity {entity_id} is in the entity registry")
 
         kwargs['entity_id'] = entity_id
 
         self.hass.states.async_set(**kwargs)
 
-    def create_and_set_state(self, entity_id: str, **kwargs: Optional[Any]):
+    def create_and_set_state(self, entity_id: str, **kwargs: Any | None):
         entity_registry_instance: entity_registry.EntityRegistry = self._call_async_method(
             entity_registry.async_get, self.hass
         )
@@ -81,7 +82,7 @@ class AppDaemonHassApiStub:
             entity_registry_instance.async_is_registered, entity_id
         )
         if not entity_is_registered:
-            self.log("Trace: entity {} is not in the entity registry and should be added".format(entity_id))
+            self.log(f"Trace: entity {entity_id} is not in the entity registry and should be added")
             # TODO Actually get it from the registry instead of hard-coding it!
             device_id = '96ff19b4e856c2c7be97b128364a2f94'
             type, split_entity = entity_id.split('.')
@@ -99,7 +100,7 @@ class AppDaemonHassApiStub:
                 func_partial
             )
         else:
-            self.log("Trace: entity {} is in the entity registry".format(entity_id))
+            self.log(f"Trace: entity {entity_id} is in the entity registry")
 
         # modified_args = kwargs
         # modified_args.pop('type')
@@ -114,7 +115,7 @@ class AppDaemonHassApiStub:
         attribute: str = None,
         default: Any = None,
         copy: bool = True,
-        **kwargs: Optional[Any],
+        **kwargs: Any | None,
     ) -> Any:
         """Get state of all or single entity/entities"""
 
@@ -136,7 +137,7 @@ class AppDaemonHassApiStub:
             attribute: str = None,
             default: Any = None,
             copy: bool = True,
-            **kwargs: Optional[Any],
+            **kwargs: Any | None,
     ):
         # self.log("Trace: _get_state_as_dict - attribute {} default {} state object {}".format(attribute, default, stateObject))
         if isinstance(stateObject, State):
@@ -194,7 +195,7 @@ class AppDaemonHassApiStub:
             method, *args
         )
         return self.__wait_for_future(future)
-        
+
     def __wait_for_future(self, future):
         while not future.done():
             sleep(0.01)  # Optionally, yield control to the event loop
@@ -250,9 +251,9 @@ class AppDaemonHassApiStub:
     def call_service(self, serviceId: str, **kwargs):
         # TODO test handling missing services e.g. if device to notify doesn't exist
         namespace, service = serviceId.split("/")
-        self.log("Trace: Service call to namespace {} service {} (serviceId {})".format(namespace, service, serviceId))
+        self.log(f"Trace: Service call to namespace {namespace} service {service} (serviceId {serviceId})")
         if not namespace or not service:
-            self.log("Warn: serviceId {} does not contain a namespace and service".format(serviceId))
+            self.log(f"Warn: serviceId {serviceId} does not contain a namespace and service")
         self.hass.services.call(namespace, service, dict(kwargs))
 
     def run_every(self, callback: Callable, start: datetime, interval: int, **kwargs):

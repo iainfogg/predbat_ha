@@ -1,7 +1,7 @@
 """Adds config flow for Predbat."""
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 import voluptuous as vol
 
@@ -12,12 +12,10 @@ from homeassistant.config_entries import (
     FlowResult,
     OptionsFlow,
 )
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import selector
-import homeassistant.helpers.config_validation as cv
 
-from .const import CONFIG_INITIAL_MODE, DOMAIN, LOGGER
+from .const import CONFIG_INITIAL_MODE, DOMAIN
 
 
 class PredbatConfigSchemaManager:
@@ -67,7 +65,7 @@ class PredbatConfigInputValidator:
     """Supports config and options flows by validating user input."""
 
     @staticmethod
-    def validateInput(user_input: Dict[str, Any]):
+    def validateInput(user_input: dict[str, Any]):
         """Validate user input."""
         return True
 
@@ -149,10 +147,10 @@ class PredbatOptionsFlowHandler(OptionsFlow):
         self.config_entry = config_entry
 
     async def async_step_init(
-        self, user_input: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+        self, user_input: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """First step in the options flow."""
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
 
         if user_input is not None:
             # My original attempt (which works):

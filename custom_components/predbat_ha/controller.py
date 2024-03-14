@@ -3,7 +3,7 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 
 from .predbat import PredBat as OldPredbat
 from .predbat import ENVIRONMENT, ENVIRONMENT_HA_INTEGRATION
@@ -65,10 +65,10 @@ class PredbatController:
         self.hass.bus.async_listen_once(
             EVENT_HOMEASSISTANT_STARTED, async_run_predbat_initialize
         )
-        
+
 
     def config_loader(self, filename):
-        with open(filename, 'r') as file:
+        with open(filename) as file:
             config = yaml.safe_load(file)
 
         return config
