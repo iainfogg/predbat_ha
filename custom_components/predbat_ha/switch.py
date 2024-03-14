@@ -64,7 +64,6 @@ class PredbatSwitch(PredbatEntity, SwitchEntity):
         self.entity_description = entity_description
         # TODO this is no good here without getting the value from somewhere
         self._attr_is_on = False
-        self.controller.predbat.log(f"Trace: __init__ state {self.state}")
 
     async def async_added_to_hass(self):
         last_state = await self.async_get_last_state()
