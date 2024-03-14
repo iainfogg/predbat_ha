@@ -43,7 +43,7 @@ class PredbatSensor(PredbatEntity, SensorEntity):
         entity_description: SensorEntityDescription,
     ) -> None:
         """Initialize the sensor class."""
-        super().__init__(controller)
+        super().__init__(controller = controller, entity_description = entity_description)
         self.entity_description = entity_description
 
     @property

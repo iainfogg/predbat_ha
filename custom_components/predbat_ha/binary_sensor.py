@@ -48,7 +48,7 @@ class PredbatBinarySensor(PredbatEntity, BinarySensorEntity):
         entity_description: BinarySensorEntityDescription,
     ) -> None:
         """Initialize the binary_sensor class."""
-        super().__init__(controller)
+        super().__init__(controller = controller, entity_description = entity_description)
         self.entity_description = entity_description
 
     @property

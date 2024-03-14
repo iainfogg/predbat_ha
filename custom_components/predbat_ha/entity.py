@@ -1,7 +1,7 @@
 """PredbatEntity class."""
 from __future__ import annotations
 
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity import DeviceInfo, EntityDescription
 from homeassistant.helpers.restore_state import RestoreEntity
 
 # from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -18,12 +18,13 @@ class PredbatEntity(RestoreEntity):
     # _attr_attribution = ATTRIBUTION
 
     # def __init__(self, coordinator: PredbatDataUpdateCoordinator) -> None:
-    def __init__(self, controller: PredbatController) -> None:
+    def __init__(self, controller: PredbatController, entity_description: EntityDescription) -> None:
         """Initialize."""
         # super().__init__(coordinator)
         self.controller = controller
         # self._attr_unique_id = coordinator.config_entry.entry_id
-        self._attr_unique_id = controller.config_entry.entry_id
+        # self._attr_unique_id = controller.config_entry.entry_id
+        self._attr_unique_id = entity_description.key
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, self.unique_id)},
             name=NAME,
