@@ -5,13 +5,11 @@
         "title": "Predbat configuration",
         "description": "Initial Predbat configuration is done here, but it can be customised later",
         "data": {
-          "inverter_type": "Inverter type",
-          "inverter_name": "Nice name for your inverter",
-          "expert_mode": "Some thing",
+          "switch.predbat_expert_mode": "Expert mode",
           "mode": "Predbat mode"
         },
         "data_description": {
-          "expert_mode": "explain this field",
+          "switch.predbat_expert_mode": "When turned on, this causes a wider range of configuration options to be available to you. When starting out, we recommend this is turned off.",
           "mode": "Explain the mode field"
         }
       },
@@ -36,11 +34,11 @@
         "data": {
           "inverter_ip_address": "Inverter IP address",
           "inverter_port": "Inverter port",
-          "expert_mode": "Some thing",
+          "switch.predbat_expert_mode": "Expert mode",
           "mode": "Predbat mode"
         },
         "data_description": {
-          "expert_mode": "explain this field",
+          "switch.predbat_expert_mode": "When turned on, this causes a wider range of configuration options to be available to you. When starting out, we recommend this is turned off.",
           "mode": "Explain the mode field"
         }
       }

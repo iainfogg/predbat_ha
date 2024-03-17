@@ -15,7 +15,7 @@ from homeassistant.config_entries import (
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import selector
 
-from .const import CONFIG_INITIAL_MODE, DOMAIN
+from .const import CONFIG_EXPERT_MODE_SENSOR, CONFIG_INITIAL_MODE, DOMAIN
 
 
 class PredbatConfigSchemaManager:
@@ -32,11 +32,13 @@ class PredbatConfigSchemaManager:
         schema = vol.Schema(
             {
                 vol.Required(
-                    "expert_mode",
-                    default=None
+                    CONFIG_EXPERT_MODE_SENSOR,
+                    default=False
                     if config_entry is None
-                    else config_entry.data.get("expert_mode"),
-                ): str,
+                    else config_entry.data.get(CONFIG_EXPERT_MODE_SENSOR),
+                ): selector.BooleanSelector(
+                    selector.BooleanSelectorConfig()
+                ),
                 vol.Required(
                     CONFIG_INITIAL_MODE,
                     default="Read-only"

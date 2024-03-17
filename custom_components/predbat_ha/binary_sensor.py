@@ -9,7 +9,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
+from .const import CONFIG_EXPERT_MODE_SENSOR, DOMAIN
 from .controller import PredbatController
 
 # from .coordinator import PredbatDataUpdateCoordinator
@@ -20,6 +20,11 @@ ENTITY_DESCRIPTIONS = (
         key="predbat_ha",
         name="Predbat Binary Sensor",
         device_class=BinarySensorDeviceClass.CONNECTIVITY,
+    ),
+    BinarySensorEntityDescription(
+        key=CONFIG_EXPERT_MODE_SENSOR,
+        name="Expert mode",
+        # device_class=BinarySensorDeviceClass.,
     ),
 )
 
@@ -54,4 +59,4 @@ class PredbatBinarySensor(PredbatEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """Return true if the binary_sensor is on."""
-        return self.controller.data.get("key")
+        return self.controller.data.get(self.entity_description.key)
