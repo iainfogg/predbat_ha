@@ -156,6 +156,7 @@ class AppDaemonHassApiStub:
 
         # TODO: Should this return a state object, or the state from the object?
         # TODO: Add support for attributes and default
+        # TODO: Should we be getting state via a helper rather than straight from the states dict?
         return self._get_state_as_dict(self.hass.states.get(entity_id = entity_id, **kwargs), attribute = attribute, default = default)
 
     def _get_state_as_dict(self, stateObject,
