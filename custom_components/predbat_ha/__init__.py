@@ -39,7 +39,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = predbatController
     hass.data[DOMAIN]['controller'] = predbatController
 
-    await predbatController.load_old_predbat()
+    # await predbatController.load_old_predbat()
+    predbatController.predbat.log('Warning: Predbat initialisation currently disabled while testing options flow')
 
     def predbat_update_time_loop(service_call):
         predbatController.predbat.log('predbat_update_time_loop service called')

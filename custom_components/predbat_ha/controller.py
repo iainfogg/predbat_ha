@@ -24,8 +24,8 @@ class PredbatController:
         """Initialise class."""
         self.hass = hass
         self.config_entry = config_entry
-        self.data = {"key": "value"}
-        self.predbat = None
+        self.data = self.config_entry.data
+        self.predbat = OldPredbat(self.hass)
 
     # @callback
     # def async_predbat_loop_service_handler(service_call):
@@ -35,7 +35,7 @@ class PredbatController:
     #     self.hass.async
 
     async def load_old_predbat(self):
-        self.predbat = OldPredbat(self.hass)
+        # self.predbat = OldPredbat(self.hass)
 
         current_folder = path.dirname(__file__)
 
