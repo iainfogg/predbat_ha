@@ -7,11 +7,11 @@
         "data": {
           "inverter_type": "Inverter type",
           "inverter_name": "Nice name for your inverter",
-          "something": "Some thing",
+          "expert_mode": "Some thing",
           "mode": "Predbat mode"
         },
         "data_description": {
-          "something": "explain this field",
+          "expert_mode": "explain this field",
           "mode": "Explain the mode field"
         }
       },
@@ -36,11 +36,11 @@
         "data": {
           "inverter_ip_address": "Inverter IP address",
           "inverter_port": "Inverter port",
-          "something": "Some thing",
+          "expert_mode": "Some thing",
           "mode": "Predbat mode"
         },
         "data_description": {
-          "something": "explain this field",
+          "expert_mode": "explain this field",
           "mode": "Explain the mode field"
         }
       }

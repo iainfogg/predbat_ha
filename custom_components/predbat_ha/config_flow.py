@@ -32,10 +32,10 @@ class PredbatConfigSchemaManager:
         schema = vol.Schema(
             {
                 vol.Required(
-                    "something",
+                    "expert_mode",
                     default=None
                     if config_entry is None
-                    else config_entry.data.get("something"),
+                    else config_entry.data.get("expert_mode"),
                 ): str,
                 vol.Required(
                     CONFIG_INITIAL_MODE,
