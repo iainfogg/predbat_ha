@@ -9,6 +9,7 @@ from .const import DOMAIN
 # from .coordinator import PredbatDataUpdateCoordinator
 from .controller import PredbatController
 from .entity import PredbatEntity
+from .entity_description_builder import PredbatEntityDescriptionBuilder
 
 ENTITY_DESCRIPTIONS = (
     SwitchEntityDescription(
@@ -46,7 +47,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_d
             controller=controller,
             entity_description=entity_description,
         )
-        for entity_description in ENTITY_DESCRIPTIONS
+        for entity_description in PredbatEntityDescriptionBuilder.get_entity_descriptions_for_platform("switch")
     )
 
 
@@ -63,7 +64,7 @@ class PredbatSwitch(PredbatEntity, SwitchEntity):
         super().__init__(controller = controller, entity_description = entity_description)
         self.entity_description = entity_description
         # TODO this is no good here without getting the value from somewhere
-        self._attr_is_on = False
+        self._attr_is_on = initial_state
 
     async def async_added_to_hass(self):
         last_state = await self.async_get_last_state()
