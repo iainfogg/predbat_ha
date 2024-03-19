@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from .const import DOMAIN
@@ -47,7 +48,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_d
     )
 
 
-class PredbatSwitch(PredbatEntity, SwitchEntity):
+class PredbatSwitch(PredbatEntity, SwitchEntity, RestoreEntity):
     """predbat_ha switch class."""
 
     def __init__(

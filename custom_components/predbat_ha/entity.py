@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from homeassistant.helpers.entity import DeviceInfo, EntityDescription
-from homeassistant.helpers.restore_state import RestoreEntity
 
 # from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, NAME, VERSION
@@ -14,7 +13,7 @@ from .predbat import THIS_VERSION as PREDBAT_VERSION
 
 
 # class PredbatEntity(CoordinatorEntity):
-class PredbatEntity(RestoreEntity):
+class PredbatEntity():
     """Predbat class."""
 
     # _attr_attribution = ATTRIBUTION
