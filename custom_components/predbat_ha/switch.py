@@ -88,3 +88,8 @@ class PredbatSwitch(PredbatEntity, SwitchEntity, RestoreEntity):
     # TODO Rename this to avoid clash with HA name (for readability if nothing else)
     async def async_update_ha_state(self, *args):
         self.async_write_ha_state()
+
+    @property
+    def icon(self) -> str | None:
+        """Icon of the entity"""
+        return self.entity_description.icon
