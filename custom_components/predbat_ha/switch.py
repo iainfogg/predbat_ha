@@ -9,7 +9,7 @@ from .const import DOMAIN
 # from .coordinator import PredbatDataUpdateCoordinator
 from .controller import PredbatController
 from .entity import PredbatEntity
-from .entity_description_builder import PredbatEntityDescriptionBuilder
+from .entity_builder import PredbatEntityBuilder
 
 ENTITY_DESCRIPTIONS = (
     SwitchEntityDescription(
@@ -43,11 +43,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_d
     # coordinator = hass.data[DOMAIN][entry.entry_id]
     controller = hass.data[DOMAIN][entry.entry_id]
     async_add_devices(
-        PredbatSwitch(
-            controller=controller,
-            entity_description=entity_description,
-        )
-        for entity_description in PredbatEntityDescriptionBuilder.get_entity_descriptions_for_platform("switch")
+        PredbatEntityBuilder.get_entities_to_add_for_platform("switch", controller)
     )
 
 
