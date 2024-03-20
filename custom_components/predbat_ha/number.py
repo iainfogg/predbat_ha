@@ -16,7 +16,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_d
     # coordinator = hass.data[DOMAIN][entry.entry_id]
     controller = hass.data[DOMAIN][entry.entry_id]
     async_add_devices(
-        PredbatEntityBuilder.get_entities_to_add_for_platform("input_number", controller)
+        await PredbatEntityBuilder.get_entities_to_add_for_platform("input_number", controller)
     )
 
 class PredbatNumber(PredbatEntity, RestoreNumber):
