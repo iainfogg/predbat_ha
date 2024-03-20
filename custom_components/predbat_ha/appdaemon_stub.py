@@ -56,23 +56,11 @@ class AppDaemonHassApiStub:
         if isinstance(kwargs['new_state'], State):
             kwargs['new_state'] = kwargs['new_state'].state
 
-        # self.log(f"State is {kwargs['new_state']}")
-        # self.log(f"Entity is {entity_id}")
-        # self.log(f"Entity type is {type(kwargs['new_state'])}")
-
-        # self.log("State value being set; entity {} state value {}".format(entity_id, kwargs['new_state']))
-        # if isinstance(kwargs['new_state'], str) and len(kwargs['new_state']) > 255:
-        #     self.log("WARN: State value longer than allowed 255; entity {} state value {}".format(entity_id, kwargs['new_state']))
-
         # TODO: Look into creating the device if it doesn't exist,
         # so that it can be created and attached to the Predbat device,
         # rather than just being a helper entity floating around by itself
         # self.hass.states.async_set(entity_id = entity_id, **kwargs)
         # entity_registry.async_resolve_entity_id(entity_id)
-
-        # resolve_kwargs = {}
-        # resolve_kwargs['registry'] = entity_registry.async_get(self.hass)
-        # resolve_kwargs['entity_id_or_uuid'] = entity_id
 
         entity_registry_instance = self._call_async_method(
             entity_registry.async_get, self.hass
@@ -80,10 +68,10 @@ class AppDaemonHassApiStub:
         entity_is_registered = self._call_async_method(
             entity_registry_instance.async_is_registered, entity_id
         )
-        if not entity_is_registered:
-            self.log(f"Trace: entity {entity_id} is not in the entity registry and should be added")
-        else:
-            self.log(f"Trace: entity {entity_id} is in the entity registry")
+        # if not entity_is_registered:
+        #     self.log(f"Trace: entity {entity_id} is not in the entity registry and should be added")
+        # else:
+        #     self.log(f"Trace: entity {entity_id} is in the entity registry")
 
         kwargs['entity_id'] = entity_id
 
@@ -108,7 +96,6 @@ class AppDaemonHassApiStub:
             entity_registry_instance.async_is_registered, entity_id
         )
         if not entity_is_registered:
-            self.log(f"Trace: entity {entity_id} is not in the entity registry and should be added")
             # TODO Actually get it from the registry instead of hard-coding it!
             device_id = '96ff19b4e856c2c7be97b128364a2f94'
             type, split_entity = entity_id.split('.')
@@ -125,13 +112,6 @@ class AppDaemonHassApiStub:
             self._call_async_method(
                 func_partial
             )
-        else:
-            self.log(f"Trace: entity {entity_id} is in the entity registry")
-
-        # modified_args = kwargs
-        # modified_args.pop('type')
-
-        # modified_args['entity_id'] = entity_id
 
         self.set_state(entity_id, **kwargs)
 
@@ -278,7 +258,6 @@ class AppDaemonHassApiStub:
     def call_service(self, serviceId: str, **kwargs):
         # TODO test handling missing services e.g. if device to notify doesn't exist
         namespace, service = serviceId.split("/")
-        self.log(f"Trace: Service call to namespace {namespace} service {service} (serviceId {serviceId})")
         if not namespace or not service:
             self.log(f"Warn: serviceId {serviceId} does not contain a namespace and service")
         self.hass.services.call(namespace, service, dict(kwargs))

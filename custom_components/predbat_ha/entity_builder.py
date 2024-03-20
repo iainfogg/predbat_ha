@@ -22,8 +22,8 @@ class PredbatEntityBuilder(object):
         self.controller = controller
 
     @staticmethod
-    async def get_entities_to_add_for_platform(platform: str, controller: PredbatController)-> dict:
-        if platform not in PLATFORMS_TO_BUILD:
+    async def get_entities_to_add_for_platform(predbat_platform: str, controller: PredbatController)-> dict:
+        if predbat_platform not in PLATFORMS_TO_BUILD:
             return []
 
         builder = PredbatEntityBuilder(controller)
@@ -31,7 +31,7 @@ class PredbatEntityBuilder(object):
         entities_to_add = []
         entities_to_delete = []
         for item in CONFIG_ITEMS:
-            if item.get("type") not in platform:
+            if item.get("type") != predbat_platform:
                 continue
 
             # Check if this depends on another config value
@@ -55,21 +55,17 @@ class PredbatEntityBuilder(object):
             # TODO: Ensure certain items are only added when the value
             # they depend on (e.g. expert_mode) is true
             # (we are currently adding all items all the time)
-            entities_to_add.append(await builder.get_entity_to_add_for_platform(item, platform))
+            entities_to_add.append(await builder.get_entity_to_add_for_platform(item, predbat_platform))
 
         entity_registry_instance = entity_registry.async_get(builder.controller.hass)
-        builder.controller.predbat.log("Trace: Entities being deleted as not needed {}".format(entities_to_delete))
         for entity_to_delete in entities_to_delete:
-            # TODO: Not all entities are being deleted, likely due to HA naming
-            # or not passing the right params into the following call
-            # (failures are in log output)
-            entity_entry = entity_registry_instance.async_get_entity_id(platform, DOMAIN, entity_to_delete)
+            # Delete unneeded entities for this platform if they exist
+            # (they may not, but let's make sure)
+            entity_entry = entity_registry_instance.async_get_entity_id(await builder.convert_predbat_to_ha_platform(predbat_platform), DOMAIN, entity_to_delete)
             if entity_entry:
                 entity_registry_instance.async_remove(entity_entry)
-            else:builder.controller.predbat.log("Trace: Failed to find entity_id for {}".format(entity_to_delete))
 
-
-
+        # Pass back the entities to create for this platform
         return entities_to_add
 
     async def get_entity_to_add_for_platform(self, item: dict[str, Any], platform: str):
@@ -142,3 +138,10 @@ class PredbatEntityBuilder(object):
     async def _add_dict_item_if_key_exists(self, source_key: str, item: dict[str, Any], target_key: str, entity_dict: dict):
         if source_key in item:
             entity_dict[target_key] = item.get(source_key)
+
+    async def convert_predbat_to_ha_platform(self, predbat_platform: str) -> str:
+        match predbat_platform:
+            case 'input_number':
+                return 'number'
+            case _:
+                return predbat_platform

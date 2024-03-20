@@ -51,5 +51,4 @@ class PredbatNumber(PredbatEntity, RestoreNumber):
     @property
     def icon(self) -> str | None:
         """Icon of the entity"""
-        self.controller.predbat.log("Trace: icon {}".format(self.entity_description.icon))
         return self.entity_description.icon
